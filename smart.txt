@@ -1,0 +1,97 @@
+begin{
+	if ($maxPlayers = 0)
+		$maxPlayers := ?players;
+	$i := 0;
+	$prodSum := 0;
+	while ($i < ?players & $i < $maxPlayers){
+		$prodSum := $prodSum + ?prod($i);
+		$i := $i + 1;
+	}
+	if ($prodSum > ?prodAmount)
+		$prodDef := 1;
+	if ($prodSum < ?prodAmount | $prodSum = ?prodAmount)
+		$prodDef := 0;
+	
+	if ($lastAucShiftProd = 0)
+		$lastAucShiftProd := 1;
+	if ($lastAucShiftRaw = 0)
+		$lastAucShiftRaw := 1;
+
+
+	$sellNum := ?prodAmount;
+       	if ($sellNum > ?prod(?myId))
+            	$sellNum := ?prod(?myId);
+	if ($prodDef = 0){
+		$sellPrice := (?prodPrice*$lastAucShiftProd)*
+                                        ((?random(16)+85)/100);
+		sell $sellNum $sellPrice;
+	}	
+	if ($prodDef = 1){
+		sell $sellNum ?prodPrice;
+		$sellPrice := ?prodPrice;
+	}
+	$buyNum := ?plants(?myId);
+                if ($buyNum > ?rawAmount)
+                        $buyNum := ?rawAmount;
+	if ($rawDef = 0){
+		$buyPrice := (?rawPrice/$lastAucShiftRaw)*
+                                        ((?random(16)+100)/100);
+		if (?money(?myId) > (3/2)*$buyPrice*$buyNum)
+			buy $buyNum $buyPrice;
+	}
+	if ($rawDef = 1){
+		if (?money(?myId) > (3/2)*?rawPrice*$buyNum)
+			buy $buyNum ?rawPrice;	
+		$buyPrice := ?rawPrice;
+	}
+
+	$toprod := ?plants(?myId);
+	if ($toprod > ?raw(?myId))
+		$toprod := ?raw(?myId);
+	prod $toprod;
+
+	if ((?money(?myId) > 4*5000) & 
+		($buildTurn = 0 | ?turn-$buildTurn>6)){
+		$buildTurn := ?turn;
+		build 1;
+	}
+        if ((?money(?myId) > 4*10000))
+                abuild 1; 
+
+	$i := 0;
+	$num := 0;
+	$sum := 0;
+	while ($i < ?players & $i < $maxPlayers){	
+		if (?aucProdPrice($i) > ?prodPrice/2){
+			$sum := $sum + ?aucProdPrice($i) / ?prodPrice;
+			$num := $num + 1;
+		}
+		$i := $i + 1;
+	}
+	if ($lastAucShiftProd = 0)
+		$lastAucShiftProd := 1;
+	if ($num > 0)
+		$lastAucShiftProd := ($lastAucShiftProd+$sum) / ($num+1);
+
+
+	$i := 0;
+        $num := 0;
+        $sum := 0;
+        while ($i < ?players & $i < $maxPlayers){ 
+                if (?aucRawPrice($i) < ?rawPrice/2 &
+				 ?aucRawPrice(?myId) > 0){
+                        $sum := $sum + ?aucRawPrice($i) / ?rawPrice;
+                        $num := $num + 1;
+                }
+                $i := $i + 1;
+        }
+        if ($lastAucShiftRaw = 0)
+                $lastAucShiftRaw := 1;
+        if ($num > 0){
+                $lastAucShiftRaw := ($lastAucShiftRaw+$sum) / ($num+1);
+		$rawDef := 1;
+	}
+	if ($num = 0)
+		$rawDef := 0;
+	endturn;
+}end

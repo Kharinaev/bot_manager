@@ -1,0 +1,11 @@
+begin
+{
+       	buy 2 ?rawPrice;
+       	sell 2 ?prodPrice;
+	$toprod := 2;
+       	if ( ?raw(?myId) < $toprod )
+		$toprod := ?raw(?myId);
+       	prod $toprod;
+        endturn;
+}
+end
