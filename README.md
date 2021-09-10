@@ -8,8 +8,8 @@ The Bot can connect to "Manager" server via sockets and play with other players 
 It reads program from file given to it in the command line arguments. 
 
 The Bot : 
-- checks lexical (lexer.cpp) 
-- and syntaсtic (syntax.cpp) correctness (Chomsky's theory of formal grammars) 
+- checks lexical (lexer.cpp, using Finite-state machine) 
+- and syntaсtic (syntax.cpp, using Recursive descent parser) correctness (Chomsky's theory of formal grammars) 
 - makes Reverse Polish Notation (rpn.cpp) 
 - and executes it
 - in case of lexical or syntactic mistake Bot explains type of error and what it expets on input. 
